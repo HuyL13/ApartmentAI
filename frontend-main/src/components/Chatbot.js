@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { FaComments, FaTimes, FaPaperPlane } from 'react-icons/fa';
+import { FaComments, FaTimes, FaPaperPlane, FaRobot, FaUser } from 'react-icons/fa';
 import './Chatbot.css';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { text: "Xin chào! Tôi là trợ lý ảo Blue Moon. Tôi có thể giúp gì cho bạn?", sender: 'bot' }
+    { text: "Xin chào! Tôi là trợ lý ảo ApartmentAI. Tôi có thể giúp gì cho bạn?", sender: 'bot' }
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -68,46 +68,77 @@ const Chatbot = () => {
 
   return (
     <div className="chatbot-container">
-      {!isOpen && (
-        <button className="chatbot-toggle" onClick={toggleChat}>
-          <FaComments />
-        </button>
-      )}
+      {/* Floating Button */}
+      <button 
+        className={`chatbot-toggle ${isOpen ? 'hidden' : ''}`} 
+        onClick={toggleChat}
+        aria-label="Open chat"
+      >
+        <FaComments />
+        <span className="toggle-pulse"></span>
+      </button>
 
-      {isOpen && (
-        <div className="chatbot-window">
-          <div className="chatbot-header">
-            <h3>Hỗ trợ cư dân</h3>
-            <button className="close-btn" onClick={toggleChat}>
-              <FaTimes />
-            </button>
+      {/* Chat Window */}
+      <div className={`chatbot-window ${isOpen ? 'open' : ''}`}>
+        <div className="chatbot-header">
+          <div className="header-info">
+            <div className="bot-avatar">
+              <FaRobot />
+            </div>
+            <div className="header-text">
+              <h3>Hỗ trợ cư dân</h3>
+              <span className="status">● Trực tuyến</span>
+            </div>
           </div>
-          
-          <div className="chatbot-messages">
-            {messages.map((msg, index) => (
-              <div key={index} className={`message ${msg.sender}`}>
+          <button className="close-btn" onClick={toggleChat} aria-label="Close chat">
+            <FaTimes />
+          </button>
+        </div>
+        
+        <div className="chatbot-messages">
+          {messages.map((msg, index) => (
+            <div key={index} className={`message-wrapper ${msg.sender}`}>
+              <div className="message-avatar">
+                {msg.sender === 'bot' ? <FaRobot /> : <FaUser />}
+              </div>
+              <div className={`message ${msg.sender}`}>
                 {msg.text}
               </div>
-            ))}
-            {isLoading && <div className="message bot">Đang nhập...</div>}
-            <div ref={messagesEndRef} />
-          </div>
-
-          <div className="chatbot-input">
-            <input
-              type="text"
-              placeholder="Nhập tin nhắn..."
-              value={input}
-              onChange={handleInputChange}
-              onKeyPress={handleKeyPress}
-              disabled={isLoading}
-            />
-            <button onClick={sendMessage} disabled={isLoading || !input.trim()}>
-              <FaPaperPlane />
-            </button>
-          </div>
+            </div>
+          ))}
+          {isLoading && (
+            <div className="message-wrapper bot">
+              <div className="message-avatar">
+                <FaRobot />
+              </div>
+              <div className="message bot typing">
+                <span className="typing-dot"></span>
+                <span className="typing-dot"></span>
+                <span className="typing-dot"></span>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
-      )}
+
+        <div className="chatbot-input">
+          <input
+            type="text"
+            placeholder="Nhập tin nhắn..."
+            value={input}
+            onChange={handleInputChange}
+            onKeyPress={handleKeyPress}
+            disabled={isLoading}
+          />
+          <button 
+            onClick={sendMessage} 
+            disabled={isLoading || !input.trim()}
+            aria-label="Send message"
+          >
+            <FaPaperPlane />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
